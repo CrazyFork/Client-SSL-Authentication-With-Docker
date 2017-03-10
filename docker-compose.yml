@@ -1,0 +1,29 @@
+version: '2'
+
+services:
+
+  nginx:
+    image: nginx:latest
+    command: [nginx-debug, -g, daemon off;]
+    container_name: nginx
+    ports:
+     - "443:443"
+    volumes:
+     - ./nginx/nginx:/etc/nginx:ro
+     - ./nginx/www:/var/www:ro
+     - ./nginx/logs:/usr/share/nginx/logs
+     - ./coucou.html:/usr/share/nginx/coucou/index.html:ro
+
+  proxy:
+    image: httpd:latest
+    container_name: proxy
+    ports:
+     - "9443:443"
+    volumes:
+     - ./proxy/apache2/ssl:/usr/local/apache2/ssl:ro
+     - ./proxy/apache2/conf/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro
+     - ./proxy/apache2/conf/sites-available:/usr/local/apache2/conf/sites-available:ro
+     - ./proxy/apache2/conf/htdocs:/usr/local/apache2/conf/htdocs:ro
+     - ./proxy/apache2/logs:/usr/local/apache2/logs
+    depends_on:
+     - nginx
